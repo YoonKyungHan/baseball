@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>야구게임</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-header">
+            <h1 class="game-title">⚾ 야구게임</h1>
+            <div class="room-info">
+                <span id="roomName">방 이름</span>
+                <span id="playerCount">플레이어: 1/2</span>
+            </div>
+        </div>
+
+        <div class="game-area">
+            <!-- 상대방 영역 -->
+            <div class="opponent-area">
+                <h3>상대방</h3>
+                <div id="opponentName" class="player-name">상대방을 기다리는 중...</div>
+                <div class="win-indicators">
+                    <div class="win-circle" id="opponentWin1"></div>
+                    <div class="win-circle" id="opponentWin2"></div>
+                </div>
+                <div class="secret-number">
+                    <div class="number-slot">?</div>
+                    <div class="number-slot">?</div>
+                    <div class="number-slot">?</div>
+                    <div class="number-slot">?</div>
+                </div>
+                <div class="opponent-status" id="opponentStatus">준비 중...</div>
+            </div>
+
+            <!-- 게임 상태 -->
+            <div class="game-status">
+                <div id="gamePhase" class="phase-indicator">숫자를 설정해주세요</div>
+                <div id="roundInfo" class="round-indicator">게임 준비 중...</div>
+                <div id="currentTurn" class="turn-indicator"></div>
+            </div>
+
+            <!-- 내 영역 -->
+            <div class="my-area">
+                <h3>나</h3>
+                <div id="myName" class="player-name">플레이어</div>
+                <div class="win-indicators">
+                    <div class="win-circle" id="myWin1"></div>
+                    <div class="win-circle" id="myWin2"></div>
+                </div>
+                <div class="secret-number">
+                    <input type="number" class="number-input" id="digit1" min="0" max="9" maxlength="1">
+                    <input type="number" class="number-input" id="digit2" min="0" max="9" maxlength="1">
+                    <input type="number" class="number-input" id="digit3" min="0" max="9" maxlength="1">
+                    <input type="number" class="number-input" id="digit4" min="0" max="9" maxlength="1">
+                </div>
+                <button id="setNumberBtn" class="btn btn-primary">숫자 설정</button>
+            </div>
+        </div>
+
+        <!-- 게임 진행 영역 -->
+        <div class="guess-area" id="guessArea" style="display: none;">
+            <h3>추측하기</h3>
+            <div class="guess-input">
+                <input type="number" class="guess-digit" id="guess1" min="0" max="9" maxlength="1">
+                <input type="number" class="guess-digit" id="guess2" min="0" max="9" maxlength="1">
+                <input type="number" class="guess-digit" id="guess3" min="0" max="9" maxlength="1">
+                <input type="number" class="guess-digit" id="guess4" min="0" max="9" maxlength="1">
+                <button id="guessBtn" class="btn btn-primary">추측</button>
+            </div>
+            
+            <!-- 이모티콘 패널 -->
+            <div class="emoji-section">
+                <button id="toggleEmojiBtn" class="btn btn-secondary emoji-toggle-btn">😊 감정표현</button>
+                <div class="emoji-panel" id="emojiPanel" style="display: none;">
+                    <div class="emoji-buttons">
+                        <button class="emoji-btn" data-emoji="😤" title="빨리해!">😤</button>
+                        <button class="emoji-btn" data-emoji="👏" title="잘했어!">👏</button>
+                        <button class="emoji-btn" data-emoji="😅" title="당황">😅</button>
+                        <button class="emoji-btn" data-emoji="🔥" title="열정!">🔥</button>
+                        <button class="emoji-btn" data-emoji="💪" title="화이팅!">💪</button>
+                        <button class="emoji-btn" data-emoji="🤔" title="생각중">🤔</button>
+                        <button class="emoji-btn" data-emoji="😂" title="웃겨!">😂</button>
+                        <button class="emoji-btn" data-emoji="🥺" title="부탁">🥺</button>
+                        <button class="emoji-btn" data-emoji="😎" title="멋져!">😎</button>
+                        <button class="emoji-btn" data-emoji="💀" title="망했다">💀</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 게임 히스토리 -->
+        <div class="game-history">
+            <h3>게임 기록</h3>
+            <div class="history-container">
+                <div class="my-history">
+                    <h4>내 추측</h4>
+                    <div id="myHistory" class="history-list"></div>
+                </div>
+                <div class="opponent-history">
+                    <h4>상대방 추측</h4>
+                    <div id="opponentHistory" class="history-list"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 이모티콘 애니메이션 영역 -->
+        <div id="emojiAnimationArea" class="emoji-animation-area"></div>
+
+        <!-- 게임 컨트롤 -->
+        <div class="game-controls">
+            <button id="leaveRoomBtn" class="btn btn-secondary">방 나가기</button>
+            <button id="restartBtn" class="btn btn-warning" style="display: none;">다시 시작</button>
+        </div>
+    </div>
+
+    <!-- 게임 결과 모달 -->
+    <div id="gameResultModal" class="modal">
+        <div class="modal-content">
+            <div id="resultContent"></div>
+            <button id="playAgainBtn" class="btn btn-primary">다시 플레이</button>
+            <button id="goLobbyBtn" class="btn btn-secondary">로비로</button>
+        </div>
+    </div>
+
+    <script src="client.js"></script>
+    <script src="game.js"></script>
+</body>
+</html> 

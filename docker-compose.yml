@@ -1,0 +1,50 @@
+name: baseball-game
+services:
+  redpanda:
+    image: redpandadata/redpanda:latest
+    command:
+      - redpanda
+      - start
+      - --overprovisioned
+      - --smp
+      - "1"
+      - --memory
+      - 1G
+      - --reserve-memory
+      - 0M
+      - --node-id
+      - "0"
+      - --check=false
+    ports:
+      - "9092:9092"   # Kafka API
+      - "9644:9644"   # Admin API
+    volumes:
+      - redpanda_data:/var/lib/redpanda
+
+  init-topics:
+    image: redpandadata/redpanda:latest
+    depends_on:
+      - redpanda
+    entrypoint: /bin/sh
+    command: -c "until rpk cluster info --brokers redpanda:9092 >/dev/null 2>&1; do echo waiting for redpanda...; sleep 1; done; rpk topic create game-events game-commands --brokers redpanda:9092 || true"
+    restart: "no"
+
+  app:
+    build: .
+    environment:
+      - PORT=3001
+      - KAFKA_BROKERS=redpanda:9092
+      - KAFKA_CLIENT_ID=baseball-game
+    ports:
+      - "3001:3001"
+    depends_on:
+      - redpanda
+      - init-topics
+    volumes:
+      - ./data:/app/data
+
+volumes:
+  redpanda_data: {}
+  # 필요 시 데이터 볼륨을 선언할 수 있습니다 (예: redpanda 데이터 영속화)
+  # redpanda_data:
+

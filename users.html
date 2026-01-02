@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>유저 이력</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="history-page">
+    <div class="history-card">
+      <div class="history-header">
+        <h1>👥 유저 이력</h1>
+        <div class="history-actions">
+          <a href="lobby.html" class="btn btn-secondary">← 로비로</a>
+        </div>
+      </div>
+
+      <div class="history-controls">
+        <div class="control-group">
+          <label for="limitSelect">표시 개수</label>
+          <select id="limitSelect">
+            <option value="50">최근 50개</option>
+            <option value="100">최근 100개</option>
+            <option value="200">최근 200개</option>
+          </select>
+        </div>
+        <div class="control-buttons">
+          <button id="refreshBtn" class="btn btn-primary">새로고침</button>
+        </div>
+      </div>
+
+      <div id="userTimeline" class="history-timeline"></div>
+    </div>
+  </div>
+
+  <script>
+    async function fetchUsers(limit=50){
+      const res = await fetch(`/api/users?limit=${encodeURIComponent(limit)}`);
+      const data = await res.json();
+      return data.items || [];
+    }
+    function fmt(iso){try{const d=new Date(iso);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;}catch{return iso;}}
+    function render(items){
+      const el = document.getElementById('userTimeline');
+      el.innerHTML = items.map(it=>{
+        const when = fmt(it.at);
+        const who = it.playerName || it.playerId || '알 수 없음';
+        const ev = it.event === 'join' ? '접속' : (it.event === 'leave' ? '퇴장' : it.event);
+        return `<div class="timeline-item"><div class="time">${when}</div><div class="content"><div class="title">${who}</div><div class="meta">${ev}</div></div></div>`;
+      }).join('');
+    }
+    async function load(){
+      const limit = parseInt(document.getElementById('limitSelect').value,10)||50;
+      const items = await fetchUsers(limit);
+      render(items);
+    }
+    document.addEventListener('DOMContentLoaded',()=>{
+      document.getElementById('refreshBtn').addEventListener('click', load);
+      document.getElementById('limitSelect').addEventListener('change', load);
+      load();
+    });
+  </script>
+</body>
+</html>
+

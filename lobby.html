@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>야구게임 - 로비</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="lobby-layout">
+        <aside class="lobby-sidebar">
+            <h3>현재 접속자</h3>
+            <ul id="onlineUsers" class="online-users"></ul>
+            <div class="sidebar-links">
+                <a href="users.html" class="btn btn-secondary">유저 이력 보기</a>
+                <a href="history.html" class="btn btn-secondary">게임 히스토리</a>
+            </div>
+        </aside>
+        <div class="ad-banner-top">
+            <span class="ad-badge">AD</span>
+            <div class="ad-title"><span class="brand">CMAX</span> 스마트팩토리</div>
+            <div class="ad-small">기업 10개 대상 무료 추첨 이벤트 진행중! (추첨 과정은 라이브로진행 : 사다리타기)</div>
+        </div>
+        <div class="ad-banner-right">
+            <span class="ad-badge">AD</span>
+            <div class="ad-title"><span class="brand">CMAX</span> 한정식 오픈</div>
+            <div class="ad-divider"></div>
+            <div class="ad-small">초대 이벤트 진행중! 한달간 불닭 쇠고기 타코 2개 무료</div>
+            <div class="ad-small">점심특선: 김치볶음밥, 대구탕</div>
+            <!-- <a class="ad-cta" href="#" onclick="return false;">자세히 보기</a> -->
+        </div>
+    
+    <div class="lobby-container">
+        <h1 class="game-title">🏟️ 야구게임 로비</h1>
+        
+        <div class="player-info">
+            <input type="text" id="playerName" placeholder="닉네임을 입력하세요" maxlength="10">
+        </div>
+
+        <div class="rooms-container">
+            <h2>게임 방 목록</h2>
+            <div class="rooms-list" id="roomsList">
+                <!-- 방 목록이 동적으로 추가됩니다 -->
+            </div>
+            <button id="createRoomBtn" class="btn btn-primary">새 방 만들기</button>
+            <button id="soloGameBtn" class="btn btn-warning">혼자하기 (AI 상대)</button>
+            <button id="refreshBtn" class="btn btn-secondary">새로고침</button>
+            <a href="history.html" class="btn btn-secondary history-link">히스토리 보기</a>
+        </div>
+
+        <div class="connection-status">
+            <span id="connectionStatus">연결 중...</span>
+        </div>
+    </div>
+
+    <!-- 방 생성 모달 -->
+    <div id="createRoomModal" class="modal">
+        <div class="modal-content">
+            <h3>새 방 만들기</h3>
+            <input type="text" id="roomName" placeholder="방 이름을 입력하세요" maxlength="20">
+            
+            <div class="game-mode-selection">
+                <h4>게임 모드 선택</h4>
+                <div class="radio-group">
+                    <label class="radio-option">
+                        <input type="radio" name="gameMode" value="single" checked>
+                        <span class="radio-custom"></span>
+                        <div class="option-info">
+                            <div class="option-title">🎯 단판</div>
+                            <div class="option-desc">한 번 승부로 끝</div>
+                        </div>
+                    </label>
+                    
+                    <label class="radio-option">
+                        <input type="radio" name="gameMode" value="bestOf3">
+                        <span class="radio-custom"></span>
+                        <div class="option-info">
+                            <div class="option-title">🏆 3판 2승제</div>
+                            <div class="option-desc">2승을 먼저 달성하면 승리</div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="modal-actions">
+                <button id="confirmCreateBtn" class="btn btn-primary">방 만들기</button>
+                <button id="cancelCreateBtn" class="btn btn-secondary">취소</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="client.js"></script>
+    <script src="lobby.js"></script>
+    </div>
+</body>
+</html> 

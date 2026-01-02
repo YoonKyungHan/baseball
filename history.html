@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>야구게임 - 히스토리</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+</head>
+<body>
+    <div class="history-page">
+        <div class="history-card">
+            <div class="history-header">
+                <h1>📜 게임 히스토리</h1>
+                <div class="history-actions">
+                    <a href="lobby.html" class="btn btn-secondary">← 로비로</a>
+                </div>
+            </div>
+
+            <div class="history-controls">
+                <div class="control-group">
+                    <label for="limitSelect">표시 개수</label>
+                    <select id="limitSelect">
+                        <option value="50">최근 50개</option>
+                        <option value="100">최근 100개</option>
+                        <option value="200">최근 200개</option>
+                    </select>
+                </div>
+                <div class="control-buttons">
+                    <button id="refreshHistoryBtn" class="btn btn-primary">새로고침</button>
+                </div>
+            </div>
+
+            <div id="historyEmpty" class="history-empty" style="display:none;">
+                <div class="empty-emoji">🕰️</div>
+                <p>아직 기록이 없습니다. 게임을 플레이해보세요!</p>
+            </div>
+
+            <div id="historyTimeline" class="history-timeline"></div>
+        </div>
+    </div>
+
+    <script src="history.js"></script>
+    <div id="emojiAnimationArea" class="emoji-animation-area"></div>
+    
+</body>
+</html>
+
