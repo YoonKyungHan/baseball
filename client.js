@@ -107,9 +107,17 @@ class GameClient {
     // 연결 상태 업데이트
     updateConnectionStatus(status, isConnected) {
         const statusEl = document.getElementById('connectionStatus');
-        if (statusEl) {
-            statusEl.textContent = status;
-            statusEl.className = `connection-status ${isConnected ? 'connected' : 'disconnected'}`;
+        if (!statusEl) return;
+
+        statusEl.textContent = status;
+
+        // 스타일 클래스는 wrapper(div)에 적용해서 "pill 안에 pill" 중첩을 방지
+        const wrap =
+            document.getElementById('connectionStatusWrap') ||
+            statusEl.closest('.connection-status');
+
+        if (wrap) {
+            wrap.className = `connection-status ${isConnected ? 'connected' : 'disconnected'}`;
         }
     }
 
