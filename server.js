@@ -5,115 +5,115 @@ const fs = require('fs');
 require('dotenv').config();
 const { Kafka } = require('kafkajs');
 
-// // Kafka 설정
-// // - 환경변수에서 브로커/클라이언트ID를 읽어 프로듀서를 초기화합니다.
-// // - Kafka가 없어도 서버는 동작하도록 설계되었으며, 연결 실패 시 경고만 출력합니다.
-// const kafkaBrokers = (process.env.KAFKA_BROKERS || 'localhost:9092')
-//   .split(',')
-//   .map(b => b.trim())
-//   .filter(Boolean);
-// const kafkaClientId = process.env.KAFKA_CLIENT_ID || 'baseball-game';
-// const kafka = new Kafka({ clientId: kafkaClientId, brokers: kafkaBrokers });
-// // 게임 종료 이벤트 토픽, 유저 이벤트 토픽
-// const kafkaTopicGameEvents = process.env.KAFKA_TOPIC_GAME_EVENTS || 'game-events';
-// const kafkaTopicUserEvents = process.env.KAFKA_TOPIC_USER_EVENTS || 'user-events';
-// let kafkaProducer;
+// Kafka 설정 test
+// - 환경변수에서 브로커/클라이언트ID를 읽어 프로듀서를 초기화합니다.
+// - Kafka가 없어도 서버는 동작하도록 설계되었으며, 연결 실패 시 경고만 출력합니다.
+const kafkaBrokers = (process.env.KAFKA_BROKERS || 'localhost:9092')
+  .split(',')
+  .map(b => b.trim())
+  .filter(Boolean);
+const kafkaClientId = process.env.KAFKA_CLIENT_ID || 'baseball-game';
+const kafka = new Kafka({ clientId: kafkaClientId, brokers: kafkaBrokers });
+// 게임 종료 이벤트 토픽, 유저 이벤트 토픽
+const kafkaTopicGameEvents = process.env.KAFKA_TOPIC_GAME_EVENTS || 'game-events';
+const kafkaTopicUserEvents = process.env.KAFKA_TOPIC_USER_EVENTS || 'user-events';
+let kafkaProducer;
 
-// // 히스토리 실시간 구독자(WebSocket) 목록
-// const historySubscribers = new Set();
-// function notifyHistorySubscribers(record) {
-//     const message = JSON.stringify({ type: 'historyUpdate', record });
-//     historySubscribers.forEach((socket) => {
-//         try {
-//             if (socket.readyState === WebSocket.OPEN) {
-//                 socket.send(message);
-//             }
-//         } catch (e) {
-//             historySubscribers.delete(socket);
-//         }
-//     });
-// }
+// 히스토리 실시간 구독자(WebSocket) 목록
+const historySubscribers = new Set();
+function notifyHistorySubscribers(record) {
+    const message = JSON.stringify({ type: 'historyUpdate', record });
+    historySubscribers.forEach((socket) => {
+        try {
+            if (socket.readyState === WebSocket.OPEN) {
+                socket.send(message);
+            }
+        } catch (e) {
+            historySubscribers.delete(socket);
+        }
+    });
+}
 
-// // 로컬 파일 히스토리 저장 경로
-// // - Kafka 외에도 최소 이력은 파일(JSONL)로 남깁니다.
-// const HISTORY_DIR = path.join(__dirname, 'data');
-// const HISTORY_FILE = path.join(HISTORY_DIR, 'game_history.jsonl');
-// const USER_HISTORY_FILE = path.join(HISTORY_DIR, 'user_history.jsonl');
+// 로컬 파일 히스토리 저장 경로
+// - Kafka 외에도 최소 이력은 파일(JSONL)로 남깁니다.
+const HISTORY_DIR = path.join(__dirname, 'data');
+const HISTORY_FILE = path.join(HISTORY_DIR, 'game_history.jsonl');
+const USER_HISTORY_FILE = path.join(HISTORY_DIR, 'user_history.jsonl');
 
-// async function ensureHistoryDir() {
-//     // data 디렉터리가 없으면 생성
-//     try {
-//         await fs.promises.mkdir(HISTORY_DIR, { recursive: true });
-//     } catch (e) {
-//         // ignore
-//     }
-// }
+async function ensureHistoryDir() {
+    // data 디렉터리가 없으면 생성
+    try {
+        await fs.promises.mkdir(HISTORY_DIR, { recursive: true });
+    } catch (e) {
+        // ignore
+    }
+}
 
-// async function appendHistoryLine(record) {
-//     // 히스토리를 JSON Lines 포맷으로 한 줄씩 추가합니다.
-//     await ensureHistoryDir();
-//     const line = JSON.stringify(record) + '\n';
-//     await fs.promises.appendFile(HISTORY_FILE, line, 'utf-8');
-// }
+async function appendHistoryLine(record) {
+    // 히스토리를 JSON Lines 포맷으로 한 줄씩 추가합니다.
+    await ensureHistoryDir();
+    const line = JSON.stringify(record) + '\n';
+    await fs.promises.appendFile(HISTORY_FILE, line, 'utf-8');
+}
 
-// async function appendUserHistoryLine(record) {
-//     await ensureHistoryDir();
-//     const line = JSON.stringify(record) + '\n';
-//     await fs.promises.appendFile(USER_HISTORY_FILE, line, 'utf-8');
-// }
+async function appendUserHistoryLine(record) {
+    await ensureHistoryDir();
+    const line = JSON.stringify(record) + '\n';
+    await fs.promises.appendFile(USER_HISTORY_FILE, line, 'utf-8');
+}
 
-// async function initKafka() {
-//     // 애플리케이션 시작 시 프로듀서를 연결합니다.
-//     // 실패해도 게임 진행에는 영향이 없도록 try-catch로 감쌉니다.
-//     try {
-//         kafkaProducer = kafka.producer();
-//         await kafkaProducer.connect();
-//         console.log('✅ Kafka Producer 연결 완료:', kafkaBrokers.join(','));
-//     } catch (err) {
-//         console.error('⚠️ Kafka 초기화 실패(프로듀서). 서버는 계속 동작합니다:', err.message);
-//     }
-// }
+async function initKafka() {
+    // 애플리케이션 시작 시 프로듀서를 연결합니다.
+    // 실패해도 게임 진행에는 영향이 없도록 try-catch로 감쌉니다.
+    try {
+        kafkaProducer = kafka.producer();
+        await kafkaProducer.connect();
+        console.log('✅ Kafka Producer 연결 완료:', kafkaBrokers.join(','));
+    } catch (err) {
+        console.error('⚠️ Kafka 초기화 실패(프로듀서). 서버는 계속 동작합니다:', err.message);
+    }
+}
 
-// initKafka();
+initKafka();
 
-// // Kafka Consumer → WebSocket 브리지 (교육용 데모)
-// async function initKafkaConsumers() {
-//     try {
-//         const groupId = process.env.KAFKA_BRIDGE_GROUP_ID || 'baseball-ws-bridge';
-//         const consumer = kafka.consumer({ groupId });
-//         await consumer.connect();
-//         // 존재하지 않아도 무시하도록 try
-//         try { await consumer.subscribe({ topic: kafkaTopicGameEvents, fromBeginning: true }); } catch {}
-//         try { await consumer.subscribe({ topic: kafkaTopicUserEvents, fromBeginning: true }); } catch {}
+// Kafka Consumer → WebSocket 브리지 (교육용 데모)
+async function initKafkaConsumers() {
+    try {
+        const groupId = process.env.KAFKA_BRIDGE_GROUP_ID || 'baseball-ws-bridge';
+        const consumer = kafka.consumer({ groupId });
+        await consumer.connect();
+        // 존재하지 않아도 무시하도록 try
+        try { await consumer.subscribe({ topic: kafkaTopicGameEvents, fromBeginning: true }); } catch {}
+        try { await consumer.subscribe({ topic: kafkaTopicUserEvents, fromBeginning: true }); } catch {}
 
-//         await consumer.run({
-//             eachMessage: async ({ topic, partition, message }) => {
-//                 const raw = message.value ? message.value.toString() : '';
-//                 let payload = null;
-//                 try { payload = JSON.parse(raw); } catch { payload = { raw }; }
-//                 const out = topic === kafkaTopicGameEvents
-//                     ? { type: 'kafkaGameEvent', event: payload }
-//                     : { type: 'kafkaUserEvent', event: payload };
-//                 // 모든 웹소켓 클라이언트에 브로드캐스트
-//                 try {
-//                     wss.clients.forEach(client => {
-//                         if (client.readyState === WebSocket.OPEN) {
-//                             client.send(JSON.stringify(out));
-//                         }
-//                     });
-//                 } catch (e) {
-//                     console.error('WS 브로드캐스트 실패:', e);
-//                 }
-//             }
-//         });
+        await consumer.run({
+            eachMessage: async ({ topic, partition, message }) => {
+                const raw = message.value ? message.value.toString() : '';
+                let payload = null;
+                try { payload = JSON.parse(raw); } catch { payload = { raw }; }
+                const out = topic === kafkaTopicGameEvents
+                    ? { type: 'kafkaGameEvent', event: payload }
+                    : { type: 'kafkaUserEvent', event: payload };
+                // 모든 웹소켓 클라이언트에 브로드캐스트
+                try {
+                    wss.clients.forEach(client => {
+                        if (client.readyState === WebSocket.OPEN) {
+                            client.send(JSON.stringify(out));
+                        }
+                    });
+                } catch (e) {
+                    console.error('WS 브로드캐스트 실패:', e);
+                }
+            }
+        });
 
-//         console.log('✅ Kafka Consumer 브리지 실행 (groupId=%s)', groupId);
-//     } catch (err) {
-//         console.error('⚠️ Kafka Consumer 초기화 실패. 서버는 계속 동작합니다:', err.message);
-//     }
-// }
+        console.log('✅ Kafka Consumer 브리지 실행 (groupId=%s)', groupId);
+    } catch (err) {
+        console.error('⚠️ Kafka Consumer 초기화 실패. 서버는 계속 동작합니다:', err.message);
+    }
+}
 
-// initKafkaConsumers();
+initKafkaConsumers();
 
 // HTTP 서버 생성 (정적 파일 서빙 + 간단 API)
 const server = http.createServer(async (req, res) => {
@@ -173,7 +173,7 @@ const server = http.createServer(async (req, res) => {
                 };
                 await appendHistoryLine(record);
                 // 실시간 구독자에게 푸시
-                // notifyHistorySubscribers(record);
+                notifyHistorySubscribers(record);
                 // Kafka 발행 시도 (가능할 때만)
                 if (kafkaProducer) {
                     await kafkaProducer.send({
@@ -985,7 +985,7 @@ wss.on('connection', (ws) => {
             switch (data.type) {
                 case 'subscribeHistory':
                     // 히스토리 실시간 구독 등록
-                    // historySubscribers.add(ws);
+                    historySubscribers.add(ws);
                     ws.send(JSON.stringify({ type: 'historySubscribed' }));
                     break;
                 case 'join':
@@ -1102,9 +1102,9 @@ wss.on('connection', (ws) => {
     ws.on('close', () => {
         console.log('클라이언트 연결 종료');
         // 히스토리 구독자 목록에서 제거
-        // if (historySubscribers.has(ws)) {
-        //     historySubscribers.delete(ws);
-        // }
+        if (historySubscribers.has(ws)) {
+            historySubscribers.delete(ws);
+        }
         // 유저 퇴장 기록 (홈페이지 닫힘 포함)
         try {
             if (ws.playerId) {
